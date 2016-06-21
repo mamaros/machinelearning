@@ -1,0 +1,102 @@
+---
+title: "Prediction Assignment"
+author: "Yvonne Tavis"
+date: "June 20, 2016"
+---
+Introduction:
+This write up is submitted in fulfillment of the Johns Hopkins University Machine Learning course  requirements. This project uses the Weight Lifting Exercise Dataset from http://groupware.les.inf.puc-rio.br/har. We thank the authors of the paper Qualitative Activity Recognition of Weight Lifting Exercises (Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H.) for letting us use their dataset for this machine learning assignment. 
+
+Purpose:
+Using data from the Weight Lifting Exercise dataset, we are going to predict how well a test subject performs the Unilateral Dumbbell Biceps Curl exercise. This is captured in the "classe" variable. The "classe" values are:  A (exactly per specifications), B (throwing elbows to the front), C (lifting the dumbbell only halfway), D (lowering the dumbbell only halfway), and E (throwing the hips to the front). Read more: http://groupware.les.inf.puc-rio.br/har#ixzz4C3kQc1s5
+
+Data:
+The training dataset (pml-training.csv) and test dataset (pml-testing.csv) are available at https://d396qusza40orc.cloudfront.net/predmachlearn/ 
+
+Methodology:
+
+The project is performed using R. The code is commented out in this file. The hashtags (#) need to be removed in order to run the code in R.
+
+First, the training and test datasets are imported into R using the read.csv function. 
+```{r}
+### Remove the hashtags if running the code in R.
+# Import data files into R
+  #dattrain=read.csv("~/Desktop/pml-training-2.csv")
+  #dattest=read.csv("~/Desktop/pml-testing-2.csv")
+```
+
+Next, a basic Exploratory Analysis shows that there are 160 variables, with the 160th being the "classe" variable. The is.na function is used to determine which variables contain missing or N/A values. There are 67 columns that contain N/A values. Subsequently, a closer look  of the remaining 93 columns shows that the first 6 columns contain index data such as the test subject's user_names and timestamps. Lastly, the nearZeroVar function is used to determine columns that have near zero variation. These identified columns containg N/A values, index values and near zero Variation are removed from the datasets during the preprocessing step.
+
+```{r}
+# High Level Exploratory Analysis
+  #library(caret)
+  #summary(dattrain)
+  #head(dattrain)
+  #nsv <- nearZeroVar(dattrain,saveMetrics = TRUE)
+  #dim(dattrain[,colSums(is.na(dattrain))>0])[2] 
+  #dim(dattrain[,!colSums(is.na(dattrain))>0])[2]
+  #str(dattrain[1:10,1:5])
+```
+  
+The next step is to preprocess the training and test datasets. The columns with missing or N/A values, near zero Variance and index values are removed from the datasets. 
+```{r}
+#Data prep for training and cross validation data
+  #nsv <- nearZeroVar(dattrain,saveMetrics = TRUE)
+  #dattrainb<-dattrain[,nsv$nzv==FALSE]
+  #dattraind <- dattrainb[, !colSums(is.na(dattrainb)) > 0]
+  #dattrain0 <- dattraind[,-c(1:6)]
+#Repeat data prep for test case data
+  #nsvtest <- nearZeroVar(dattest,saveMetrics=TRUE)
+  #dattestb <- dattest[,nsvtest$nzv==FALSE]
+  #dattestd <- dattestb[, !colSums(is.na(dattestb)) > 0]
+  #dattest0 <- dattestd[,-c(1:6)] 
+```
+
+The training dataset is then split into the training and testing datasets for use in the Model training step. The createDataPartition function is used for this step with a 70% - 30% random split based on the classe variable.
+
+The next step is to fit the training dataset using two methods, (1) Gradient Tree Boosting (method='gbm'); and (2) Random Forest (method='rf'). These two methods work well for predicting categorical variables such as the classe variable. 
+
+``` {r}
+#Create a training and testing data set
+  #inBuild <- createDataPartition(dattrain0$classe,
+  #                             p=0.7, list=FALSE)
+  #testing <- dattrain0[-inBuild,]; training <- dattrain0[inBuild,]
+ 
+#Fit a boosted predictor using "gbm"
+  #fit_gbm<- train(classe~.,method="gbm", 
+  #                preProcess=c("center","scale","zv"),  data=training)
+
+#Fit a random forest predictor 
+ #fit_rf<-train(classe~.,method="rf",
+ #      preProcess=c("center","scale"),  data=training)
+```
+
+The next step is to validate the models by running the testing dataset and comparing the results against the actual classe variables on the testing dataset to measure the accuracy.
+
+The Gradient Tree Boosting model achieved 96% accuracy. In comparison, the Random Forest Model achieved a higher 99% accuracy.
+``` {r}
+#Predict classe values using the fit_gbm model
+  #fit_gbm<- train(classe~.,method="gbm", 
+  #              preProcess=c("center","scale","zv"),  data=training)
+  #predict_gbm <- predict(fit_gbm,newdata=testing)
+  #accuracygbm <- table(predict_gbm==testing$classe)
+  #accuracygbm[2]/(accuracygbm[1]+accuracygbm[2])
+
+#Predict classe values using the fit_rf model
+  #fit_rf<-train(classe~.,method="rf",
+  #    preProcess=c("center","scale"),  data=training)
+  #predictrf1 <- predict(fit_rf,testing)
+  #accuracyrf <- table(predictrf1==testing$classe)
+  #accuracyrf[2]/(accuracyrf[1]+accuracyrf[2])
+```
+
+For the final step, the testing data containing the 20 test cases for this prediction assignment is run through the models. In both models, 100% accuracy is achieved as verified through the Project Quiz scores.
+```{r}
+#Predict the classe values using the fit_gbm model on the test data
+ #predict_gbm2 <- predict(fit_gbm,newdata=dattest0) 
+
+#Predict the classe values using the fit_rf model on the test data
+  #predictrf2 <- predict(fit_rf,newdata=dattest0) 
+```
+
+Results:
+Expected out of sample error is 4% using the boosted method and 1% using the random forest method. With the smaller test data (20 cases), both models produced 100% accuracy.
