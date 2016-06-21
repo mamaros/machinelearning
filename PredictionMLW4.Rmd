@@ -1,8 +1,6 @@
----
-title: "Prediction Assignment"
-author: "Yvonne Tavis"
-date: "June 20, 2016"
----
+
+Prediction Assignment (JHU Coursera Machine Learning Course)
+
 Introduction:
 This write up is submitted in fulfillment of the Johns Hopkins University Machine Learning course  requirements. This project uses the Weight Lifting Exercise Dataset from http://groupware.les.inf.puc-rio.br/har. We thank the authors of the paper Qualitative Activity Recognition of Weight Lifting Exercises (Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H.) for letting us use their dataset for this machine learning assignment. 
 
